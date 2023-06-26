@@ -16,16 +16,16 @@ public class SystemSpacePlugin: NSObject, FlutterPlugin {
   }
 
   private func getAvailableSpace() -> Int64 {
-    let fileURL = URL(fileURLWithPath: "/")
-    do {
-      let resourceValues = try fileURL.resourceValues(forKeys: [.volumeAvailableCapacityForImportantUsageKey])
-      if let availableSpace = resourceValues.volumeAvailableCapacityForImportantUsage {
-        return Int64(availableSpace)
-      } else {
-        return -1
+      let fileManager = FileManager.default
+      do {
+          let systemAttributes = try fileManager.attributesOfFileSystem(forPath: "/")
+          if let freeSize = systemAttributes[.systemFreeSize] as? NSNumber {
+              return freeSize.int64Value
+          }
+      } catch {
+
       }
-    } catch {
-      return -1
-    }
+
+      return nil
   }
 }
